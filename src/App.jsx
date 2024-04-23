@@ -59,19 +59,13 @@ const App = () => {
   return (
     <div>
       <SearchBar onSubmit={formSubmitQuery} />
-
       <ImageGallery images={images} onImgClick={onImgClick} />
-
       {isLoading && <Loader isLoading={isLoading} />}
-
       {renderBtn && <Button onClick={changePage} scroll={scrollTo()} />}
-
       {showModal && (
         <Modal src={largeImg.src} alt={largeImg.alt} onClose={toggleModal} />
       )}
-
       {error && <h1>{error}</h1>}
-
       {images.length === 0 && <h2>Nothing, please start your search</h2>}
     </div>
   );
