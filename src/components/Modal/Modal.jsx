@@ -8,17 +8,16 @@ const Modal = ({ src, alt, onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const handleKeyClose = e => {
+      if (e.code === 'Escape') {
+        onClose();
+      }
+    };
     window.addEventListener('keydown', handleKeyClose);
     return () => {
       window.removeEventListener('keydown', handleKeyClose);
     };
-  }, []);
-
-  const handleKeyClose = e => {
-    if (e.code === 'Escape') {
-      onClose();
-    }
-  };
+  }, [onClose]);
 
   const onImgLoad = () => {
     setIsLoading(false);
