@@ -1,60 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 import Loader from '../Loader';
 
 const modalRoot = document.querySelector('#modal-root');
 
-class Modal extends React.Component {
-  static propTypes = PropTypes.shape({
-    src: PropTypes.string,
-    alt: PropTypes.string,
-    onClose: PropTypes.func,
-  }).isRequired;
+const Modal = ({ src, alt, onClose }) => {
+  const [isLoading, setIsLoading] = useState(true);
 
-  state = {
-    isLoading: true,
-  };
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyClose);
+    return () => {
+      window.removeEventListener('keydown', handleKeyClose);
+    };
+  }, []);
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyClose);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyClose);
-  }
-
-  handleKeyClose = e => {
+  const handleKeyClose = e => {
     if (e.code === 'Escape') {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  handleBackdropClose = e => {
-    if (e.currentTarget === e.target) {
-      this.props.onClose();
-    }
+  const onImgLoad = () => {
+    setIsLoading(false);
   };
 
-  onImgLoad = () => {
-    this.setState({ isLoading: false });
-  };
+  return createPortal(
+    <div className="Overlay" onClick={onClose}>
+      <div className="Modal">
+        <img src={src} alt={alt} onLoad={onImgLoad} />
 
-  render() {
-    const { src, alt } = this.props;
-    const { isLoading } = this.state;
-
-    return createPortal(
-      <div className="Overlay" onClick={this.handleBackdropClose}>
-        <div className="Modal">
-          <img src={src} alt={alt} onLoad={this.onImgLoad} />
-
-          {isLoading && <Loader isLoading={isLoading} />}
-        </div>
-      </div>,
-      modalRoot,
-    );
-  }
-}
+        {isLoading && <Loader isLoading={isLoading} />}
+      </div>
+    </div>,
+    modalRoot
+  );
+};
 
 export default Modal;

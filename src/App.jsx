@@ -60,7 +60,7 @@ const App = () => {
     <div>
       <SearchBar onSubmit={formSubmitQuery} />
 
-      <ImageGallery images={images} onClick={onImgClick} />
+      <ImageGallery images={images} onImgClick={onImgClick} />
 
       {isLoading && <Loader isLoading={isLoading} />}
 
