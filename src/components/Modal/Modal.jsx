@@ -23,8 +23,12 @@ const Modal = ({ src, alt, onClose }) => {
     setIsLoading(false);
   };
 
+  const isImgClick = e => {
+    e.target === e.currentTarget && onClose();
+  };
+
   return createPortal(
-    <div className="Overlay" onClick={onClose}>
+    <div className="Overlay" onClick={isImgClick}>
       <div className="Modal">
         <img src={src} alt={alt} onLoad={onImgLoad} />
 

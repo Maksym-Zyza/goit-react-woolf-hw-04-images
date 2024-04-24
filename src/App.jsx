@@ -8,22 +8,18 @@ import Loader from './components/Loader';
 import scrollTo from './services/scrollTo';
 import './styles.css';
 
-const defaultParams = {
-  page: 1,
-  searchQuery: '',
-};
-
 const App = () => {
-  const [params, setParams] = useState(defaultParams);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [renderBtn, setRenderBtn] = useState(false);
   const [images, setImages] = useState([]);
   const [largeImg, setLargeImg] = useState({ src: '', alt: '' });
+  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const { searchQuery, page } = params;
+    if (!searchQuery) return;
     const q = searchQuery;
     const options = { q, page };
     setIsLoading(true);
@@ -31,20 +27,21 @@ const App = () => {
     getImg(options)
       .then(({ hits, totalHits }) => {
         setImages(prev => [...prev, ...hits]);
-        setRenderBtn(params.page < Math.ceil(totalHits / 12));
+        setRenderBtn(page < Math.ceil(totalHits / 12));
       })
       .catch(error => setError(error))
       .finally(() => setIsLoading(false));
-  }, [params]);
+  }, [page, searchQuery]);
 
   const formSubmitQuery = query => {
-    setParams({ searchQuery: query, page: 1 });
+    setPage(1);
+    setSearchQuery(query);
     setError(null);
     setImages([]);
   };
 
   const changePage = () => {
-    setParams(prev => ({ page: prev.page + 1 }));
+    setPage(prev => prev + 1);
   };
 
   const onImgClick = (src, alt) => {
@@ -61,7 +58,9 @@ const App = () => {
       <SearchBar onSubmit={formSubmitQuery} />
       <ImageGallery images={images} onImgClick={onImgClick} />
       {isLoading && <Loader isLoading={isLoading} />}
-      {renderBtn && <Button onClick={changePage} scroll={scrollTo()} />}
+      {renderBtn && images.length > 0 && (
+        <Button onClick={changePage} scroll={scrollTo()} />
+      )}
       {showModal && (
         <Modal src={largeImg.src} alt={largeImg.alt} onClose={toggleModal} />
       )}
